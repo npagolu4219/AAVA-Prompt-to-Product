@@ -12,7 +12,9 @@ export const THEME_PRESETS: ThemePreset[] = [
 
 export const DEFAULT_THEME: ThemeSettings = {
   presetId: 'aava-teal',
-  mode: 'system',
+  // Dark by default; users can switch to light or system in Theme & settings.
+  // Keep in sync with the pre-paint script in index.html.
+  mode: 'dark',
   primary: '#1B8A8A',
   accent: '#C2570C',
   ink: '#0F2A44',
