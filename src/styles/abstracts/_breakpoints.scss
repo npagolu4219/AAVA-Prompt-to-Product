@@ -1,0 +1,38 @@
+@use 'sass:map';
+
+// Mobile-first breakpoint scale. Keep in sync with `BREAKPOINTS` in src/config/app.ts.
+$breakpoints: (
+  sm: 480px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  xxl: 1536px,
+);
+
+/// Viewport is at least $bp wide.
+@mixin up($bp) {
+  @media (min-width: map.get($breakpoints, $bp)) {
+    @content;
+  }
+}
+
+/// Viewport is narrower than $bp.
+@mixin down($bp) {
+  @media (max-width: (map.get($breakpoints, $bp) - 0.02px)) {
+    @content;
+  }
+}
+
+/// Viewport is between $from (inclusive) and $to (exclusive).
+@mixin between($from, $to) {
+  @media (min-width: map.get($breakpoints, $from)) and (max-width: (map.get($breakpoints, $to) - 0.02px)) {
+    @content;
+  }
+}
+
+/// Pointer devices without hover (touch).
+@mixin touch {
+  @media (hover: none) and (pointer: coarse) {
+    @content;
+  }
+}

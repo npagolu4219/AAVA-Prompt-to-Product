@@ -1,0 +1,55 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1.25);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.md {
+  height: rem(24px);
+  padding-inline: sp(2.5);
+  font-size: rem(12px);
+}
+
+.sm {
+  height: rem(19px);
+  padding-inline: sp(1.75);
+  font-size: rem(10.5px);
+  letter-spacing: 0.02em;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.neutral {
+  color: var(--c-text-muted);
+  background: var(--c-surface-3);
+  border: 1px solid var(--c-border);
+}
+.primary {
+  @include tint(var(--c-primary));
+  color: var(--c-primary-text);
+}
+.accent {
+  @include tint(var(--c-accent));
+  color: var(--c-accent-text);
+}
+.success {
+  @include tint(var(--c-success));
+}
+.warning {
+  @include tint(var(--c-warning));
+}
+.danger {
+  @include tint(var(--c-danger));
+}
+.info {
+  @include tint(var(--c-info));
+}

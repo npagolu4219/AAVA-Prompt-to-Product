@@ -1,0 +1,379 @@
+.pane {
+  @include scrollbar-thin;
+  height: 100%;
+  overflow-y: auto;
+  padding: sp(5);
+  background: var(--c-bg);
+
+  @include down(md) {
+    padding: sp(3);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: sp(4);
+  max-width: 1100px;
+  margin-inline: auto;
+
+  @include down(lg) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: sp(3);
+  }
+}
+
+.card {
+  @include card(5);
+  min-width: 0;
+
+  @include down(md) {
+    padding: sp(4);
+  }
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.cardTitle {
+  font-size: rem(14px);
+}
+
+.cardHint {
+  margin-top: 2px;
+  font-size: rem(12px);
+  color: var(--c-text-muted);
+}
+
+.cardHeadRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+}
+
+.eyebrow {
+  @include eyebrow;
+}
+
+// Score ----------------------------------------------------------------------
+.scoreCard {
+  display: flex;
+  align-items: center;
+  gap: sp(5);
+
+  @include down(sm) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.scoreMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: sp(2.5);
+
+  @include down(sm) {
+    align-items: center;
+  }
+}
+
+.history {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: sp(1);
+  color: var(--c-text-subtle);
+}
+
+.historyItem {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1);
+}
+
+.historyScore {
+  @include mono;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  font-size: rem(12px);
+  font-weight: 600;
+}
+
+.pass {
+  --tone: var(--c-success);
+}
+.warn {
+  --tone: var(--c-warning);
+}
+.fail {
+  --tone: var(--c-danger);
+}
+
+.historyScore.pass,
+.historyScore.warn,
+.historyScore.fail {
+  @include tint(var(--tone));
+}
+
+// Gates ----------------------------------------------------------------------
+.gates {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+  margin-top: sp(3);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: sp(2);
+    padding: sp(2) sp(3);
+    border-radius: var(--radius-md);
+    font-size: rem(13px);
+    font-weight: 500;
+  }
+}
+
+.gatePass {
+  @include tint(var(--c-success));
+  color: var(--c-text) !important;
+
+  svg {
+    color: var(--c-success);
+  }
+}
+
+.gateFail {
+  @include tint(var(--c-danger));
+  color: var(--c-text) !important;
+
+  svg {
+    color: var(--c-danger);
+  }
+}
+
+// Breakdown bars ----------------------------------------------------------------
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: sp(3);
+  margin-top: sp(4);
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: minmax(150px, 240px) minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: sp(3);
+
+  @include down(sm) {
+    grid-template-columns: minmax(0, 1fr) 44px;
+
+    .barTrack {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+}
+
+.barLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+  font-size: rem(13px);
+}
+
+.weight {
+  @include mono;
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+}
+
+.barTrack {
+  position: relative;
+  height: 10px;
+  border-radius: 10px;
+  background: var(--c-surface-3);
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  border-radius: 10px;
+  background: var(--tone);
+  transition: width 700ms var(--ease);
+}
+
+.threshold {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--c-text-subtle);
+  opacity: 0.6;
+}
+
+.barValue {
+  @include mono;
+  text-align: right;
+  font-size: rem(12.5px);
+  font-weight: 600;
+}
+
+// Gaps --------------------------------------------------------------------------
+.noGaps {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  margin-top: sp(3);
+  padding: sp(3);
+  border-radius: var(--radius-md);
+  @include tint(var(--c-success));
+  font-size: rem(13px);
+  font-weight: 500;
+}
+
+.gaps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: sp(3);
+  margin-top: sp(3);
+}
+
+.gap {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+  padding: sp(3) sp(3.5);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--c-warning);
+  background: var(--c-surface-2);
+}
+
+.gapHard {
+  border-left-color: var(--c-danger);
+}
+
+.gapHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: sp(1.5);
+}
+
+.gapEl {
+  @include mono;
+  font-size: rem(12.5px);
+  font-weight: 600;
+  color: var(--c-primary-text);
+}
+
+.gapProp {
+  font-size: rem(12.5px);
+  color: var(--c-text-muted);
+  margin-right: auto;
+}
+
+.gapBody {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: sp(2);
+  color: var(--c-text-subtle);
+
+  span {
+    @include mono;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-size: rem(12px);
+  }
+}
+
+.found {
+  @include tint(var(--c-danger));
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--c-danger) 50%, transparent);
+}
+
+.expected {
+  @include tint(var(--c-success));
+}
+
+.gapFoot {
+  display: flex;
+  justify-content: space-between;
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+  @include mono;
+}
+
+// Bands / precedence ------------------------------------------------------------
+.bands {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+  margin-top: sp(3);
+}
+
+.band {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: sp(3);
+  align-items: center;
+  padding: sp(2.5) sp(3);
+  border-radius: var(--radius-md);
+  font-size: rem(12.5px);
+  border: 1px solid transparent;
+  opacity: 0.65;
+
+  strong {
+    @include mono;
+    font-size: rem(12px);
+  }
+}
+
+.band_pass {
+  @include tint(var(--c-success));
+}
+.band_warn {
+  @include tint(var(--c-warning));
+}
+.band_fail {
+  @include tint(var(--c-danger));
+}
+
+.bandActive {
+  opacity: 1;
+  box-shadow: 0 0 0 2px currentColor inset;
+}
+
+.precedence {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2.5);
+  margin-top: sp(3);
+  font-size: rem(13px);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: sp(2.5);
+  }
+}
+
+.rank {
+  @include flex-center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font-size: rem(11px);
+  font-weight: 700;
+}

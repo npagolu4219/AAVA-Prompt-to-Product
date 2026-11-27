@@ -1,0 +1,11 @@
+@use 'sass:math';
+
+/// Spacing on the density-aware 4px grid: sp(4) → 16px at "comfortable".
+@function sp($n) {
+  @return calc(var(--space-unit) * #{$n});
+}
+
+/// px → rem (respects the user's font-scale setting).
+@function rem($px) {
+  @return math.div($px, 16px) * 1rem;
+}

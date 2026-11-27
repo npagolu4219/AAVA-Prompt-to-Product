@@ -1,0 +1,6 @@
+// Global stylesheet entry. Component styles live next to components as *.module.scss.
+@use 'base/tokens';
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/utilities';
+@use 'base/view-transitions';

@@ -1,0 +1,774 @@
+// Thread ----------------------------------------------------------------------
+$avatar: 26px;
+$gutter: sp(2.5);
+
+.threadWrap {
+  position: relative;
+  height: 100%;
+}
+
+.thread {
+  @include scrollbar-thin;
+  display: flex;
+  flex-direction: column;
+  gap: sp(1);
+  height: 100%;
+  overflow-y: auto;
+  padding: sp(3) sp(4) sp(4);
+  overscroll-behavior: contain;
+  // Soft fade where messages scroll under the section header.
+  mask-image: linear-gradient(to bottom, transparent 0, #000 sp(3));
+}
+
+.msg {
+  display: flex;
+  gap: $gutter;
+  max-width: 100%;
+  animation: msg-in var(--dur) var(--ease);
+}
+
+// Extra breathing room only between speakers, not within one agent turn.
+.groupStart:not(:first-child) {
+  margin-top: sp(3);
+}
+
+.meta {
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+  line-height: 1.4;
+
+  strong {
+    font-weight: 650;
+    color: var(--c-text-muted);
+  }
+}
+
+// User: compact bubble on the right, meta underneath.
+.user {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: sp(1);
+
+  .bubble {
+    max-width: 85%;
+    padding: sp(2) sp(3);
+    border-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-sm);
+    background: var(--c-primary-soft);
+    border: 1px solid var(--c-primary-border);
+    color: var(--c-text);
+    overflow-wrap: anywhere;
+  }
+}
+
+// Agent: no box — plain text beside a single avatar per turn, like a document.
+.avatar {
+  @include flex-center;
+  flex: none;
+  width: $avatar;
+  height: $avatar;
+  margin-top: 1px;
+  border-radius: 8px;
+  color: var(--c-on-primary);
+  background: linear-gradient(140deg, var(--c-primary), color-mix(in srgb, var(--c-primary) 50%, var(--c-accent)));
+  box-shadow: var(--shadow-sm);
+}
+
+.avatarHidden {
+  visibility: hidden;
+  height: 0;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+
+  &:hover .actions,
+  &:focus-within .actions {
+    opacity: 1;
+  }
+}
+
+.text {
+  min-width: 0;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+
+  // Code blocks inside agent text should not push the column wider.
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: rem(12px);
+  }
+
+  > div > :first-child {
+    margin-top: 0;
+  }
+  > div > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.streaming > div > :last-child::after {
+  content: '▍';
+  margin-left: 2px;
+  color: var(--c-primary);
+  animation: caret 1s steps(2) infinite;
+}
+
+.actions {
+  @include transition(opacity);
+  display: flex;
+  gap: sp(1);
+  opacity: 0;
+
+  @include touch {
+    opacity: 1;
+  }
+}
+
+.action {
+  @include reset-button;
+  @include transition(background-color, color);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px sp(1.5);
+  border-radius: var(--radius-sm);
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+
+  &:hover {
+    color: var(--c-text);
+    background: var(--c-surface-2);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.working {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(2);
+  min-height: $avatar;
+  font-size: rem(12.5px);
+  color: var(--c-text-muted);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 4px;
+
+  span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    animation: dot 1.2s infinite ease-in-out;
+
+    &:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
+}
+
+// System notices: a slim inline note aligned with agent text, not a floating pill.
+.system {
+  display: flex;
+  align-items: flex-start;
+  gap: sp(2);
+  margin: sp(2) 0 sp(1) calc(#{$avatar} + #{$gutter});
+  padding: sp(1.5) sp(2.5);
+  border-radius: var(--radius-md);
+  border-left: 2px solid var(--c-border-strong);
+  font-size: rem(12px);
+  color: var(--c-text-muted);
+  background: var(--c-surface-2);
+  animation: msg-in var(--dur) var(--ease);
+
+  svg {
+    flex: none;
+    margin-top: 3px;
+  }
+
+  > div {
+    min-width: 0;
+    font-size: inherit;
+  }
+
+  &.warning {
+    @include tint(var(--c-warning));
+    border-left-color: var(--c-warning);
+  }
+  &.danger {
+    @include tint(var(--c-danger));
+    border-left-color: var(--c-danger);
+  }
+  &.success {
+    @include tint(var(--c-success));
+    border-left-color: var(--c-success);
+  }
+
+  @include down(sm) {
+    margin-left: 0;
+  }
+}
+
+.jump {
+  @include reset-button;
+  @include transition(background-color, transform);
+  position: absolute;
+  left: 50%;
+  bottom: sp(3);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1);
+  padding: sp(1.25) sp(3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-md);
+  font-size: rem(12px);
+  font-weight: 600;
+  color: var(--c-text);
+  transform: translateX(-50%);
+  animation: msg-in var(--dur) var(--ease);
+
+  &:hover {
+    background: var(--c-surface-2);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: sp(1.5);
+  margin: auto;
+  max-width: 280px;
+  padding: sp(6) 0;
+  text-align: center;
+}
+
+.emptyIcon {
+  @include flex-center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: sp(1);
+  border-radius: 12px;
+  color: var(--c-primary-text);
+  background: var(--c-primary-soft);
+}
+
+.emptyTitle {
+  font-size: rem(14px);
+  font-weight: 650;
+  color: var(--c-text);
+}
+
+.emptyText {
+  font-size: rem(12.5px);
+  line-height: 1.5;
+  color: var(--c-text-muted);
+
+  kbd {
+    padding: 0 4px;
+    border-radius: 4px;
+    border: 1px solid var(--c-border);
+    background: var(--c-surface-2);
+    font-size: rem(11px);
+  }
+}
+
+// Composer --------------------------------------------------------------------
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+}
+
+.suggestions {
+  @include scrollbar-thin;
+  display: flex;
+  align-items: center;
+  gap: sp(1.5);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+  padding-right: sp(6);
+  mask-image: linear-gradient(to right, #000 calc(100% - #{sp(8)}), transparent);
+  animation: msg-in var(--dur) var(--ease);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.suggestLabel {
+  @include eyebrow;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  font-size: rem(10px);
+  color: var(--c-text-subtle);
+}
+
+.suggestion {
+  @include reset-button;
+  @include transition(background-color, border-color, color);
+  flex: none;
+  max-width: 240px;
+  padding: sp(1) sp(2.5);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  font-size: rem(12px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    color: var(--c-primary-text);
+    border-color: var(--c-primary-border);
+    background: var(--c-primary-softer);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.figma {
+  display: flex;
+  flex-direction: column;
+  gap: sp(1.5);
+  padding: sp(2.5) sp(3);
+  border: 1px dashed var(--c-primary-border);
+  border-radius: var(--radius-md);
+  background: var(--c-primary-softer);
+  animation: msg-in var(--dur) var(--ease);
+}
+
+.figmaRow {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  color: var(--c-text-subtle);
+}
+
+.figmaInput {
+  flex: 1;
+  min-width: 0;
+  height: rem(32px);
+  padding-inline: sp(2.5);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: rem(12.5px);
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-primary);
+  }
+}
+
+.demoLink {
+  @include reset-button;
+  flex: none;
+  font-size: rem(12px);
+  font-weight: 600;
+  color: var(--c-primary-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.figmaHint {
+  display: flex;
+  align-items: center;
+  gap: sp(1.25);
+  font-size: rem(11px);
+  color: var(--c-text-muted);
+}
+
+.inputWrap {
+  @include transition(border-color, box-shadow);
+  // Morph target for the landing prompt bar (see styles/base/_view-transitions.scss).
+  view-transition-name: aava-prompt;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+
+  &:focus-within {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 18%, transparent);
+  }
+}
+
+.busy {
+  background: var(--c-surface-2);
+  border-style: dashed;
+
+  .input {
+    cursor: not-allowed;
+  }
+}
+
+.input {
+  @include scrollbar-thin;
+  width: 100%;
+  min-height: rem(48px);
+  max-height: 200px;
+  padding: sp(2.75) sp(3.5) sp(0.5);
+  border: 0;
+  resize: none;
+  background: transparent;
+  font-size: rem(14px);
+  line-height: 1.5;
+  field-sizing: content;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--c-text-subtle);
+  }
+
+  // iOS zooms inputs under 16px — avoid it on phones
+  @include down(md) {
+    font-size: 16px;
+  }
+}
+
+.inputBar {
+  display: flex;
+  align-items: center;
+  gap: sp(1.5);
+  min-width: 0;
+  padding: sp(1) sp(2) sp(2);
+}
+
+.ctxBar {
+  display: flex;
+  align-items: center;
+  gap: sp(1.5);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ctxButton {
+  @include reset-button;
+  @include transition(background-color, border-color, color);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  height: 28px;
+  padding: 0 sp(2.5);
+  border-radius: var(--radius-pill);
+  border: 1px dashed var(--c-border-strong);
+  font-size: rem(12px);
+  font-weight: 600;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--c-text);
+    background: var(--c-surface-2);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.ctxButtonOn {
+  border-style: solid;
+  border-color: var(--c-primary-border);
+  background: var(--c-primary-softer);
+  color: var(--c-primary-text);
+
+  &:hover {
+    color: var(--c-primary-text);
+    background: var(--c-primary-soft);
+  }
+}
+
+.figmaActive {
+  color: var(--c-primary-text) !important;
+  background: var(--c-primary-soft) !important;
+}
+
+.hint {
+  @include transition(opacity);
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+
+  @include touch {
+    visibility: hidden;
+  }
+
+  @include down(lg) {
+    visibility: hidden;
+  }
+}
+
+.hintHidden {
+  opacity: 0;
+}
+
+@keyframes msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes dot {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modeRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+}
+
+.autoHint {
+  position: absolute;
+  top: -7px;
+  right: sp(2);
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  font-size: rem(9.5px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-subtle);
+}
+
+// Context grounding card ----------------------------------------------------------
+.contextCard {
+  align-self: stretch;
+  margin: sp(1) 0 sp(1) calc(#{$avatar} + #{$gutter});
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--c-primary-border);
+  background: var(--c-primary-softer);
+  font-size: rem(12px);
+  animation: msg-in var(--dur) var(--ease);
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: sp(1.5);
+    padding: 0 sp(3) sp(2.5);
+  }
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: sp(1) sp(2);
+  }
+
+  @include down(sm) {
+    margin-left: 0;
+  }
+}
+
+.contextHead {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  gap: sp(1.5);
+  width: 100%;
+  min-width: 0;
+  padding: sp(1.75) sp(3);
+  border-radius: inherit;
+  text-align: left;
+  font-size: rem(12px);
+  font-weight: 650;
+  color: var(--c-primary-text);
+
+  svg {
+    flex: none;
+  }
+
+  > span:first-of-type {
+    flex: none;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.contextPeek {
+  @include truncate;
+  flex: 1;
+  min-width: 0;
+  font-weight: 400;
+  color: var(--c-text-muted);
+}
+
+.contextOpen .contextPeek {
+  visibility: hidden;
+}
+
+.contextChev {
+  color: var(--c-text-subtle);
+}
+
+.contextChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px sp(2);
+  border-radius: var(--radius-pill);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.contextDetail {
+  color: var(--c-text-muted);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+// Context chips + @mentions ---------------------------------------------------------
+.ctxChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  max-width: 160px;
+  padding: 2px sp(2);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-primary-border);
+  background: var(--c-primary-softer);
+  font-size: rem(11.5px);
+  font-weight: 600;
+  color: var(--c-primary-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctxMention {
+  border-style: dashed;
+  background: var(--c-accent-soft);
+  border-color: var(--c-accent-border);
+  color: var(--c-accent-text);
+}
+
+.inputWrap {
+  position: relative;
+}
+
+.mentions {
+  position: absolute;
+  left: sp(2);
+  right: sp(2);
+  bottom: calc(100% + #{sp(1.5)});
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-direction: column;
+  padding: sp(1.5);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-lg);
+  animation: msg-in var(--dur) var(--ease);
+}
+
+.mention {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  gap: sp(2.5);
+  width: 100%;
+  padding: sp(2) sp(2.5);
+  border-radius: var(--radius-sm);
+  text-align: left;
+
+  svg {
+    flex: none;
+    color: var(--c-primary-text);
+  }
+}
+
+.mentionOn {
+  background: var(--c-primary-soft);
+}
+
+.mentionText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+
+  strong {
+    @include mono;
+    font-size: rem(12.5px);
+  }
+
+  span {
+    @include truncate;
+    font-size: rem(11.5px);
+    color: var(--c-text-muted);
+  }
+}
+
+.mentionOff {
+  flex: none;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--c-surface-3);
+  font-size: rem(10.5px);
+  color: var(--c-text-subtle);
+}

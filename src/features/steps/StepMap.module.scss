@@ -1,0 +1,304 @@
+.map {
+  position: relative;
+}
+
+.progress {
+  height: 3px;
+  margin-bottom: sp(2);
+  border-radius: 3px;
+  background: var(--c-surface-3);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--c-primary), var(--c-accent));
+    transition: width var(--dur-slow) var(--ease);
+  }
+}
+
+.list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  position: relative;
+
+  // vertical connector line between nodes
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: calc(#{sp(2)} + 11px);
+    top: 30px;
+    bottom: -6px;
+    width: 2px;
+    background: var(--c-border);
+  }
+
+  &.done:not(:last-child)::before,
+  &.skipped:not(:last-child)::before {
+    background: color-mix(in srgb, var(--c-primary) 45%, var(--c-border));
+  }
+}
+
+.head {
+  @include reset-button;
+  @include transition(background-color);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: sp(2.5);
+  width: 100%;
+  padding: sp(1.5) sp(2);
+  border-radius: var(--radius-md);
+  text-align: left;
+
+  &:not(:disabled):hover {
+    background: var(--c-surface-2);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.node {
+  @include flex-center;
+  position: relative;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text-subtle);
+  transition: all var(--dur) var(--ease);
+}
+
+.num {
+  font-size: rem(11px);
+  font-weight: 700;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: sp(1.5);
+  min-width: 0;
+}
+
+.stepIcon {
+  color: var(--c-text-subtle);
+  flex: none;
+}
+
+.name {
+  font-weight: 650;
+  font-size: rem(13.5px);
+}
+
+.iter {
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-size: rem(10.5px);
+  font-weight: 700;
+  color: var(--c-accent-text);
+  background: var(--c-accent-soft);
+}
+
+.state {
+  margin-left: auto;
+  padding-left: sp(2);
+  font-size: rem(10.5px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-text-subtle);
+  white-space: nowrap;
+}
+
+.summary {
+  @include truncate;
+  font-size: rem(12px);
+  color: var(--c-text-muted);
+}
+
+.time {
+  @include mono;
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.chev {
+  color: var(--c-text-subtle);
+}
+
+// Status styling --------------------------------------------------------------
+.done .node {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.done .state {
+  color: var(--c-primary-text);
+}
+
+.running .node {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+  animation: node-pulse 1.3s ease-out infinite;
+}
+
+.running .name,
+.running .stepIcon,
+.running .state {
+  color: var(--c-accent-text);
+}
+
+.waiting .node {
+  border-color: var(--c-accent);
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  animation: node-pulse 1.3s ease-out infinite;
+}
+
+.waiting .head {
+  background: var(--c-accent-soft);
+}
+
+.waiting .state {
+  color: var(--c-accent-text);
+}
+
+.skipped .node {
+  border-style: dashed;
+  border-color: var(--c-primary-border);
+  color: var(--c-primary-text);
+}
+
+.skipped .name {
+  color: var(--c-text-muted);
+}
+
+.error .node {
+  border-color: var(--c-danger);
+  color: var(--c-danger);
+}
+
+.pending .name {
+  color: var(--c-text-muted);
+}
+
+// Tool calls ------------------------------------------------------------------
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: sp(1);
+  margin: 0 0 sp(1.5) calc(#{sp(2)} + 34px);
+  padding: sp(2) sp(2.5);
+  border-radius: var(--radius-md);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  animation: tools-in var(--dur) var(--ease);
+}
+
+.tool {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: baseline;
+  gap: sp(2);
+  font-size: rem(12px);
+  min-width: 0;
+}
+
+.toolDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  transform: translateY(-1px);
+}
+
+.toolRunning .toolDot {
+  background: var(--c-accent);
+  animation: node-pulse 1s ease-out infinite;
+}
+
+.toolName {
+  @include mono;
+  font-size: rem(11.5px);
+  color: var(--c-primary-text);
+  white-space: nowrap;
+}
+
+.toolResult {
+  @include truncate;
+  color: var(--c-text-muted);
+}
+
+.toolTime {
+  @include mono;
+  font-size: rem(10.5px);
+  color: var(--c-text-subtle);
+}
+
+// Full variant (mobile "Steps" view) shows richer rows --------------------------
+.full {
+  .head {
+    padding-block: sp(2.5);
+  }
+
+  .summary {
+    white-space: normal;
+  }
+
+  .tool {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    row-gap: 2px;
+
+    .toolDot {
+      grid-area: 1 / 1;
+    }
+    .toolName {
+      grid-area: 1 / 2;
+    }
+    .toolTime {
+      grid-area: 1 / 3;
+    }
+    .toolResult {
+      grid-area: 2 / 2 / 3 / 4;
+      white-space: normal;
+    }
+  }
+}
+
+@keyframes node-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 45%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+@keyframes tools-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

@@ -1,0 +1,133 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--c-code-bg);
+  color: var(--c-code-text);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: sp(2.5);
+  padding: sp(2.5) sp(3.5);
+  border-bottom: 1px solid color-mix(in srgb, white 8%, transparent);
+  font-size: rem(12px);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 5px;
+
+  i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #e5484d;
+
+    &:nth-child(2) {
+      background: #f5b83d;
+    }
+    &:nth-child(3) {
+      background: #30a46c;
+    }
+  }
+}
+
+.title {
+  @include mono;
+  @include truncate;
+  font-weight: 500;
+}
+
+.caption {
+  margin-left: auto;
+  flex: none;
+  font-size: rem(11px);
+  opacity: 0.6;
+}
+
+.code {
+  @include scrollbar-thin;
+  @include mono;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  overflow: auto;
+  padding: sp(3) 0;
+  font-size: rem(11.5px);
+  line-height: 1.65;
+  scrollbar-color: color-mix(in srgb, white 18%, transparent) transparent;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  animation: line-in 260ms var(--ease) both;
+}
+
+.compact .line {
+  grid-template-columns: minmax(0, 1fr);
+  padding-inline: sp(3.5);
+}
+
+.ln {
+  padding-right: sp(3);
+  text-align: right;
+  opacity: 0.3;
+  user-select: none;
+}
+
+.src {
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-right: sp(3);
+}
+
+// Token colours tuned for the dark code surface in both themes.
+.comment {
+  color: #6f8396;
+  font-style: italic;
+}
+.string {
+  color: #a5d6a7;
+}
+.key {
+  color: #8ecdf7;
+}
+.keyword {
+  color: #c4a7ff;
+}
+.number {
+  color: #ffcb8b;
+}
+.tag {
+  color: #ff9e9e;
+}
+.mark {
+  color: color-mix(in srgb, var(--c-primary) 55%, white);
+}
+
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: color-mix(in srgb, var(--c-primary) 60%, white);
+  animation: caret-blink 0.9s steps(2) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+}

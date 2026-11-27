@@ -1,0 +1,446 @@
+// Landing page -------------------------------------------------------------------
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100dvh;
+  scroll-behavior: smooth;
+  @include scrollbar-thin;
+
+  // Hero is the whole page: keep it vertically centred.
+  > main {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100%;
+  }
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blobA,
+.blobB {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: float 16s ease-in-out infinite alternate;
+}
+
+.blobA {
+  top: -160px;
+  left: 8%;
+  width: 520px;
+  height: 520px;
+  background: color-mix(in srgb, var(--c-primary) 45%, transparent);
+}
+
+.blobB {
+  top: 60px;
+  right: 4%;
+  width: 460px;
+  height: 460px;
+  background: color-mix(in srgb, var(--c-accent) 35%, transparent);
+  animation-delay: -6s;
+}
+
+.gridBg {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(color-mix(in srgb, var(--c-text) 6%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--c-text) 6%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 70%);
+}
+
+// Floating menu button (phones only — desktop/tablet have the nav rail) ---------
+.menuFab {
+  display: none !important;
+
+  @include down(md) {
+    position: fixed;
+    top: calc(#{sp(3)} + env(safe-area-inset-top, 0px));
+    left: sp(3);
+    z-index: var(--z-header);
+    display: inline-flex !important;
+    background: color-mix(in srgb, var(--c-surface) 85%, transparent) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+// Hero ---------------------------------------------------------------------------
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: sp(16) sp(5) sp(14);
+  text-align: center;
+
+  > * {
+    animation: rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+  > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+  > :nth-child(4) {
+    animation-delay: 240ms;
+  }
+  > :nth-child(5) {
+    animation-delay: 320ms;
+  }
+  > :nth-child(6) {
+    animation-delay: 400ms;
+  }
+
+  @include down(md) {
+    // Clear the floating menu button.
+    padding: sp(16) sp(4) sp(10);
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  text-align: left;
+  gap: sp(2);
+  padding: sp(1) sp(3) sp(1) sp(1);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  background: color-mix(in srgb, var(--c-surface) 80%, transparent);
+  font-size: rem(12.5px);
+  color: var(--c-text-muted);
+  box-shadow: var(--shadow-sm);
+
+  @include down(sm) {
+    font-size: rem(11px);
+  }
+}
+
+.pillTag {
+  padding: 2px sp(2);
+  border-radius: var(--radius-pill);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font-weight: 700;
+  font-size: rem(11px);
+}
+
+.h1 {
+  margin-top: sp(6);
+  font-size: clamp(2rem, 5.6vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  font-weight: 750;
+}
+
+.grad {
+  background: linear-gradient(100deg, var(--c-primary) 10%, color-mix(in srgb, var(--c-primary) 40%, var(--c-accent)) 55%, var(--c-accent) 90%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: grad-move 6s ease-in-out infinite alternate;
+}
+
+.lead {
+  max-width: 640px;
+  margin-top: sp(5);
+  font-size: rem(17px);
+  line-height: 1.6;
+  color: var(--c-text-muted);
+
+  @include down(md) {
+    font-size: rem(15px);
+  }
+}
+
+// Prompt bar ---------------------------------------------------------------------
+.promptWrap {
+  width: 100%;
+  max-width: 760px;
+  margin-top: sp(9);
+  text-align: left;
+}
+
+.prompt {
+  // Animated gradient border via a rotating conic background behind a padded box.
+  --angle: 0deg;
+  position: relative;
+  padding: 1.5px;
+  border-radius: calc(var(--radius-lg) + 6px);
+  background: conic-gradient(from var(--angle), var(--c-primary), var(--c-accent), color-mix(in srgb, var(--c-primary) 30%, transparent), var(--c-primary));
+  box-shadow: 0 24px 70px color-mix(in srgb, var(--c-primary) 22%, transparent), var(--shadow-md);
+  animation: spin-border 6s linear infinite;
+  view-transition-name: aava-prompt;
+
+  > * {
+    background: var(--c-surface);
+  }
+
+}
+
+.promptFocus {
+  animation-duration: 2.4s;
+  box-shadow: 0 24px 80px color-mix(in srgb, var(--c-primary) 34%, transparent), var(--shadow-lg);
+}
+
+.promptInput {
+  display: block;
+  width: 100%;
+  min-height: 112px;
+  max-height: 260px;
+  padding: sp(5) sp(5) sp(2);
+  border: 0;
+  resize: none;
+  font-size: rem(17px);
+  line-height: 1.55;
+  color: var(--c-text);
+  field-sizing: content;
+  @include scrollbar-thin;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--c-text-subtle);
+  }
+
+  @include down(md) {
+    font-size: 16px;
+    padding: sp(4) sp(4) sp(2);
+  }
+}
+
+.figma {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+  padding: sp(1) sp(5) sp(3);
+
+  @include down(md) {
+    padding-inline: sp(4);
+  }
+}
+
+.figmaRow {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  color: var(--c-text-subtle);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: rem(34px);
+    padding-inline: sp(3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--c-border-strong);
+    background: var(--c-surface-2);
+    color: var(--c-text);
+    font-size: rem(13px);
+
+    &:focus {
+      outline: none;
+      border-color: var(--c-primary);
+    }
+
+    @include down(md) {
+      font-size: 16px;
+    }
+  }
+}
+
+.linkBtn {
+  @include reset-button;
+  font-size: rem(12px);
+  font-weight: 600;
+  color: var(--c-primary-text);
+  text-decoration: underline;
+}
+
+.promptBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: sp(2);
+  padding: sp(2) sp(3) sp(3) sp(4);
+  border-radius: 0 0 calc(var(--radius-lg) + 4px) calc(var(--radius-lg) + 4px);
+}
+
+.on {
+  color: var(--c-primary-text) !important;
+  background: var(--c-primary-soft) !important;
+}
+
+.dbChip {
+  @include reset-button;
+  text-decoration: none;
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: sp(1.5);
+  max-width: 180px;
+  height: rem(28px);
+  padding-inline: sp(2.5);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  font-size: rem(12px);
+  font-weight: 600;
+  color: var(--c-text-muted);
+
+  span {
+    @include truncate;
+  }
+
+  &:hover {
+    border-color: var(--c-border-strong);
+  }
+}
+
+.ctxOn {
+  @include tint(var(--c-primary));
+  color: var(--c-primary-text);
+  text-decoration: none;
+}
+
+.dbOn {
+  @include tint(var(--c-success));
+}
+
+.kbd {
+  margin-left: auto;
+  font-size: rem(11.5px);
+  color: var(--c-text-subtle);
+
+  kbd {
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 1px solid var(--c-border);
+    background: var(--c-surface-2);
+    font-size: rem(10.5px);
+  }
+
+  @include down(sm) {
+    display: none;
+  }
+}
+
+.go {
+  height: rem(40px) !important;
+  padding-inline: sp(5) !important;
+  border-radius: var(--radius-md) !important;
+
+  // Phones: full-width Generate on its own row under the chips.
+  @include down(sm) {
+    flex: 1 0 100%;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: sp(2);
+  margin-top: sp(5);
+  max-width: 760px;
+}
+
+.chip {
+  @include reset-button;
+  @include transition(background-color, border-color, color, transform);
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1.5);
+  padding: sp(1.5) sp(3.5);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  background: color-mix(in srgb, var(--c-surface) 85%, transparent);
+  font-size: rem(13px);
+  color: var(--c-text-muted);
+
+  svg {
+    color: var(--c-primary-text);
+  }
+
+  &:hover {
+    color: var(--c-text);
+    border-color: var(--c-primary-border);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: sp(3) sp(8);
+  margin-top: sp(10);
+  font-size: rem(13px);
+  color: var(--c-text-muted);
+
+  strong {
+    display: block;
+    font-size: rem(26px);
+    letter-spacing: -0.02em;
+    color: var(--c-text);
+  }
+
+  @include down(sm) {
+    gap: sp(3) sp(6);
+
+    li {
+      width: 40%;
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes float {
+  to {
+    transform: translate(60px, 40px) scale(1.1);
+  }
+}
+
+@keyframes grad-move {
+  to {
+    background-position: 100% center;
+  }
+}
+
+@keyframes spin-border {
+  to {
+    --angle: 360deg;
+  }
+}

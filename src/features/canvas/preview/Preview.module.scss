@@ -1,0 +1,455 @@
+.pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: sp(2) sp(3);
+  padding: sp(2.5) sp(4);
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-surface);
+
+  @include down(md) {
+    padding: sp(2) sp(3);
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: sp(1.5);
+  flex: 1;
+  min-width: 0;
+}
+
+.catalog {
+  @include mono;
+  @include truncate;
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+
+  @include down(lg) {
+    display: none;
+  }
+}
+
+.tools {
+  display: flex;
+  gap: sp(1.5);
+}
+
+.hideXs {
+  @include down(sm) {
+    display: none;
+  }
+}
+
+.hideSm {
+  @include down(md) {
+    display: none;
+  }
+}
+
+// Stage -------------------------------------------------------------------------
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+
+  &.withData {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 38%);
+
+    @include down(lg) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+  }
+}
+
+.viewport {
+  @include scrollbar-thin;
+  overflow: auto;
+  padding: sp(6);
+  // dotted canvas
+  background-color: var(--c-bg);
+  background-image: radial-gradient(color-mix(in srgb, var(--c-text) 9%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+
+  @include down(md) {
+    padding: sp(3);
+  }
+}
+
+.frame {
+  @include transition(width, box-shadow, border-color);
+  position: relative;
+  margin-inline: auto;
+  min-height: 100%;
+  border-radius: var(--radius-lg);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  box-shadow: var(--shadow-md);
+  // Container queries inside the AAVA Play catalog respond to this width.
+  container: preview / inline-size;
+  overflow: hidden;
+}
+
+.tablet,
+.mobile {
+  min-height: 0;
+  border: 8px solid var(--c-ink);
+  border-radius: 28px;
+  box-shadow: var(--shadow-lg);
+
+  :global([data-theme='dark']) & {
+    border-color: #1f3245;
+  }
+}
+
+.mobile {
+  border-radius: 36px;
+}
+
+.notch {
+  width: 96px;
+  height: 6px;
+  margin: sp(2) auto 0;
+  border-radius: 6px;
+  background: var(--c-border-strong);
+}
+
+.frameInner {
+  padding: sp(8) sp(8);
+
+  @container preview (max-width: 520px) {
+    padding: sp(5) sp(4);
+  }
+}
+
+.surface {
+  animation: surface-in var(--dur-slow) var(--ease);
+}
+
+.skeleton {
+  height: 42px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--c-surface-3) 0%, var(--c-surface-2) 50%, var(--c-surface-3) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.blocked {
+  display: flex;
+  gap: sp(3);
+  padding: sp(3) sp(3.5);
+  border-radius: var(--radius-md);
+  border: 1.5px dashed color-mix(in srgb, var(--c-danger) 55%, transparent);
+  background: color-mix(in srgb, var(--c-danger) 7%, var(--c-surface));
+  color: var(--c-danger);
+  font-size: rem(13px);
+
+  svg {
+    flex: none;
+    margin-top: 2px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--c-text);
+  }
+
+  span {
+    color: var(--c-text-muted);
+    font-size: rem(12px);
+  }
+
+  code {
+    @include mono;
+    font-size: 0.95em;
+  }
+}
+
+// Data model panel ------------------------------------------------------------
+.data {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--c-border);
+  background: var(--c-code-bg);
+  color: var(--c-code-text);
+
+  @include down(lg) {
+    max-height: 240px;
+    border-left: 0;
+    border-top: 1px solid var(--c-border);
+  }
+
+  pre {
+    @include scrollbar-thin;
+    flex: 1;
+    overflow: auto;
+    padding: sp(3) sp(4);
+    font-size: rem(12px);
+    line-height: 1.6;
+  }
+}
+
+.dataHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: sp(2);
+  padding: sp(2.5) sp(4);
+  border-bottom: 1px solid color-mix(in srgb, white 10%, transparent);
+  font-size: rem(12px);
+  font-weight: 650;
+}
+
+.dataHint {
+  font-weight: 400;
+  font-size: rem(11px);
+  opacity: 0.6;
+}
+
+@keyframes surface-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+// Build theatre ------------------------------------------------------------------
+.buildBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: sp(3);
+  padding: sp(2) sp(4) sp(2.5);
+  background: linear-gradient(90deg, var(--c-primary-softer), var(--c-accent-soft));
+  border-bottom: 1px solid var(--c-border);
+  font-size: rem(12.5px);
+  animation: bar-in var(--dur-slow) var(--ease) both;
+}
+
+.buildLabel {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  min-width: 0;
+  flex: 1;
+
+  strong {
+    flex: none;
+  }
+}
+
+.buildPhase {
+  @include truncate;
+  color: var(--c-text-muted);
+}
+
+.buildDot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  animation: build-pulse 1.2s ease-out infinite;
+}
+
+.buildPct {
+  @include mono;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.buildTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--c-primary) 12%, transparent);
+
+  span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--c-primary), var(--c-accent), var(--c-primary));
+    background-size: 200% 100%;
+    animation: track 1.4s linear infinite;
+    transition: width 600ms var(--ease);
+  }
+}
+
+.frameBuilding {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-primary) 45%, transparent), 0 20px 60px color-mix(in srgb, var(--c-primary) 18%, transparent);
+  animation: glow 2.2s ease-in-out infinite;
+}
+
+// Every newly-mounted node of the A2UI surface rises into place while assembling.
+.assembling :global(:where(section, header, h1, h2, h3, p, label, input, select, button, table, tr, figure, ul > li, [role='img'], [role='separator'])) {
+  animation: node-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 90px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--c-primary) 16%, transparent) 70%, color-mix(in srgb, var(--c-primary) 55%, transparent) 100%);
+  border-bottom: 2px solid var(--c-primary);
+  animation: scan 1.8s ease-in-out infinite;
+}
+
+.verifiers {
+  position: absolute;
+  top: sp(3);
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  gap: sp(1.5);
+  padding: sp(1.5);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--c-surface) 88%, transparent);
+  border: 1px solid var(--c-border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(6px);
+  transform: translateX(-50%);
+  animation: bar-in var(--dur-slow) var(--ease) both;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px sp(2.5);
+    border-radius: var(--radius-pill);
+    font-size: rem(11.5px);
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--c-text-subtle);
+  }
+}
+
+.v_running {
+  color: var(--c-accent-text) !important;
+  background: var(--c-accent-soft);
+}
+
+.v_done {
+  color: var(--c-success) !important;
+  background: color-mix(in srgb, var(--c-success) 12%, transparent);
+}
+
+.vSpin {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: v-spin 0.7s linear infinite;
+}
+
+.v_pending .vSpin {
+  animation: none;
+  opacity: 0.4;
+}
+
+.codePanel {
+  border-left: 1px solid var(--c-border);
+  animation: code-in 420ms var(--ease) both;
+
+  @include down(lg) {
+    max-height: 42vh;
+
+    @include down(md) {
+      max-height: 32vh;
+    }
+
+    border-left: 0;
+    border-top: 1px solid var(--c-border);
+    animation-name: code-up;
+  }
+}
+
+@keyframes node-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+
+@keyframes glow {
+  50% {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-accent) 55%, transparent), 0 20px 60px color-mix(in srgb, var(--c-accent) 20%, transparent);
+  }
+}
+
+@keyframes scan {
+  0% {
+    top: -90px;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+@keyframes track {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes build-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 50%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+@keyframes bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes code-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes code-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes v-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,127 @@
+.button {
+  @include reset-button;
+  @include transition(background-color, border-color, color, box-shadow, transform);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: sp(2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Sizes ---------------------------------------------------------------------
+.sm {
+  height: rem(30px);
+  padding-inline: sp(2.5);
+  font-size: rem(12.5px);
+  gap: sp(1.5);
+}
+.md {
+  height: rem(36px);
+  padding-inline: sp(3.5);
+  font-size: rem(13.5px);
+}
+.lg {
+  height: rem(44px);
+  padding-inline: sp(5);
+  font-size: rem(15px);
+}
+
+.iconOnly {
+  padding-inline: 0;
+  aspect-ratio: 1;
+}
+
+.block {
+  display: flex;
+  width: 100%;
+}
+
+// Variants ------------------------------------------------------------------
+.primary {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--c-primary) 35%, transparent);
+
+  &:hover:not(:disabled) {
+    background: var(--c-primary-hover);
+  }
+}
+
+.accent {
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--c-accent) 86%, black);
+  }
+}
+
+.secondary {
+  background: var(--c-surface);
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
+
+  &:hover:not(:disabled) {
+    background: var(--c-surface-2);
+    border-color: var(--c-primary-border);
+  }
+}
+
+.ghost {
+  background: transparent;
+  color: var(--c-text-muted);
+
+  &:hover:not(:disabled) {
+    background: var(--c-surface-3);
+    color: var(--c-text);
+  }
+}
+
+.danger {
+  background: transparent;
+  color: var(--c-danger);
+  border-color: color-mix(in srgb, var(--c-danger) 40%, var(--c-border));
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--c-danger) 10%, var(--c-surface));
+  }
+}
+
+.label {
+  @include truncate;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

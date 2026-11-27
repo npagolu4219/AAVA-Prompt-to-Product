@@ -1,0 +1,130 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--c-overlay);
+  backdrop-filter: blur(2px);
+  animation: overlay-in var(--dur) var(--ease);
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 100vw);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-lg);
+  outline: none;
+
+  &.wide {
+    width: min(600px, 100vw);
+  }
+
+  &.right {
+    right: 0;
+    border-left: 1px solid var(--c-border);
+    animation: slide-right var(--dur-slow) var(--ease);
+  }
+
+  &.left {
+    left: 0;
+    border-right: 1px solid var(--c-border);
+    animation: slide-left var(--dur-slow) var(--ease);
+  }
+
+  // Phones: bottom sheet
+  @include down(md) {
+    &.right,
+    &.left {
+      top: auto;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-height: 88dvh;
+      border: 0;
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+      animation: slide-up var(--dur-slow) var(--ease);
+    }
+  }
+}
+
+.grabber {
+  display: none;
+
+  @include down(md) {
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: sp(2) auto 0;
+    border-radius: 4px;
+    background: var(--c-border-strong);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: sp(3);
+  padding: sp(4) sp(5);
+  border-bottom: 1px solid var(--c-border);
+}
+
+.title {
+  font-size: rem(16px);
+}
+
+.subtitle {
+  margin-top: 2px;
+  color: var(--c-text-muted);
+  font-size: rem(12.5px);
+}
+
+.body {
+  @include scrollbar-thin;
+  flex: 1;
+  overflow-y: auto;
+  padding: sp(5);
+  overscroll-behavior: contain;
+}
+
+.footer {
+  display: flex;
+  gap: sp(2);
+  justify-content: flex-end;
+  padding: sp(3) sp(5) calc(#{sp(3)} + var(--safe-bottom));
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface-2);
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slide-right {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+@keyframes slide-left {
+  from {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}

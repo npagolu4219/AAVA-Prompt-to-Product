@@ -1,0 +1,146 @@
+.md {
+  overflow-wrap: anywhere;
+
+  > :first-child {
+    margin-top: 0;
+  }
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  p,
+  ul,
+  ol,
+  pre,
+  table,
+  blockquote {
+    margin-block: 0.6em;
+  }
+
+  ul {
+    list-style: disc;
+    padding-left: 1.3em;
+  }
+  ol {
+    list-style: decimal;
+    padding-left: 1.3em;
+  }
+  li + li {
+    margin-top: 0.25em;
+  }
+
+  // GFM task list
+  li:has(> input[type='checkbox']) {
+    list-style: none;
+    margin-left: -1.3em;
+
+    input {
+      margin-right: 0.5em;
+      accent-color: var(--c-primary);
+    }
+  }
+
+  a {
+    color: var(--c-primary-text);
+  }
+
+  strong {
+    font-weight: 650;
+  }
+
+  code {
+    padding: 0.1em 0.38em;
+    border-radius: var(--radius-sm);
+    background: var(--c-surface-3);
+    border: 1px solid var(--c-border);
+    font-size: 0.86em;
+  }
+
+  pre {
+    @include scrollbar-thin;
+    overflow-x: auto;
+    padding: sp(3) sp(3.5);
+    border-radius: var(--radius-md);
+    background: var(--c-code-bg);
+    color: var(--c-code-text);
+    font-size: rem(12px);
+    line-height: 1.55;
+
+    code {
+      padding: 0;
+      background: none;
+      border: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+  }
+
+  blockquote {
+    padding: sp(2) sp(3);
+    border-left: 3px solid var(--c-primary);
+    background: var(--c-primary-softer);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--c-text-muted);
+  }
+
+  table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: 0.92em;
+  }
+
+  th,
+  td {
+    padding: sp(1.75) sp(3);
+    border-bottom: 1px solid var(--c-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    @include eyebrow;
+    font-size: rem(10.5px);
+    background: var(--c-surface-2);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--c-border);
+    margin-block: 1.5em;
+  }
+}
+
+.document {
+  font-size: rem(14px);
+  line-height: 1.65;
+
+  h1 {
+    font-size: rem(26px);
+    margin-bottom: 0.4em;
+  }
+  h2 {
+    font-size: rem(17px);
+    margin-top: 1.8em;
+    margin-bottom: 0.6em;
+    padding-bottom: 0.4em;
+    border-bottom: 1px solid var(--c-border);
+  }
+  h3 {
+    font-size: rem(14.5px);
+    margin-top: 1.4em;
+  }
+}
+
+.chat {
+  font-size: rem(13.5px);
+  line-height: 1.55;
+
+  p,
+  ul,
+  ol,
+  pre {
+    margin-block: 0.4em;
+  }
+}

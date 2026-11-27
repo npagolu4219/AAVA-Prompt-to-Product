@@ -1,0 +1,182 @@
+.pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--c-surface);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: sp(2) sp(4);
+  padding: sp(2.5) sp(4);
+  border-bottom: 1px solid var(--c-border);
+
+  @include down(md) {
+    padding: sp(2) sp(3);
+  }
+}
+
+.filters {
+  display: flex;
+  gap: sp(1.5);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.filter {
+  @include reset-button;
+  @include transition(background-color, color, border-color);
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1.5);
+  flex: none;
+  height: rem(28px);
+  padding-inline: sp(2.75);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  font-size: rem(12px);
+  font-weight: 600;
+  color: var(--c-text-muted);
+
+  &:hover {
+    color: var(--c-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.filterOn {
+  color: var(--c-primary-text);
+  border-color: var(--c-primary-border);
+  background: var(--c-primary-soft);
+}
+
+.count {
+  @include mono;
+  font-size: rem(10.5px);
+  opacity: 0.7;
+}
+
+.tokens {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1.5);
+  font-size: rem(12px);
+  color: var(--c-text-muted);
+  cursor: pointer;
+
+  input {
+    accent-color: var(--c-primary);
+  }
+}
+
+.list {
+  @include scrollbar-thin;
+  flex: 1;
+  overflow-y: auto;
+  padding: sp(2) 0;
+}
+
+// Category colour drives the type pill
+.lifecycle {
+  --cat: var(--c-primary);
+}
+.text {
+  --cat: var(--c-info);
+}
+.tool {
+  --cat: var(--c-accent);
+}
+.state {
+  --cat: var(--c-success);
+}
+.custom {
+  --cat: #a855f7;
+}
+
+.event {
+  border-bottom: 1px solid color-mix(in srgb, var(--c-border) 60%, transparent);
+}
+
+.row {
+  @include reset-button;
+  display: grid;
+  grid-template-columns: 64px 190px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: sp(3);
+  width: 100%;
+  padding: sp(1.75) sp(4);
+  text-align: left;
+  font-size: rem(12.5px);
+
+  &:hover {
+    background: var(--c-surface-2);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: -2px;
+  }
+
+  @include down(md) {
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    padding-inline: sp(3);
+
+    .label {
+      grid-column: 2 / 3;
+      grid-row: 2;
+    }
+  }
+}
+
+.time {
+  @include mono;
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.type {
+  @include mono;
+  @include truncate;
+  justify-self: start;
+  max-width: 100%;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  font-size: rem(11px);
+  font-weight: 600;
+  @include tint(var(--cat));
+}
+
+.label {
+  @include truncate;
+  color: var(--c-text-muted);
+}
+
+.chev {
+  color: var(--c-text-subtle);
+}
+
+.payload {
+  @include scrollbar-thin;
+  max-height: 260px;
+  overflow: auto;
+  margin: 0 sp(4) sp(2.5);
+  padding: sp(3);
+  border-radius: var(--radius-md);
+  background: var(--c-code-bg);
+  color: var(--c-code-text);
+  font-size: rem(11.5px);
+  line-height: 1.55;
+}
