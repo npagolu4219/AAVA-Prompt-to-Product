@@ -1,0 +1,137 @@
+// ---------------------------------------------------------------------------
+// Design tokens as CSS custom properties.
+// Brand colours, radius, density and font are overwritten at runtime by
+// ThemeProvider (src/app/providers/ThemeProvider.tsx) from the user's settings.
+// Everything else is *derived* with color-mix, so one primary colour re-themes the app.
+// ---------------------------------------------------------------------------
+
+:root {
+  color-scheme: light;
+
+  // Typography
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-scale: 1;
+
+  // Spacing + shape
+  --space-unit: 4px;
+  --radius-base: 10px;
+  --radius-sm: calc(var(--radius-base) * 0.6);
+  --radius-md: var(--radius-base);
+  --radius-lg: calc(var(--radius-base) * 1.4);
+  --radius-pill: 999px;
+
+  // Brand (runtime)
+  --c-primary: #1b8a8a;
+  --c-accent: #c2570c;
+  --c-ink: #0f2a44;
+  --c-on-primary: #ffffff;
+  --c-on-accent: #ffffff;
+
+  // Neutrals — light
+  --c-bg: #f2f5f8;
+  --c-surface: #ffffff;
+  --c-surface-2: #f6f8fa;
+  --c-surface-3: #ebf0f4;
+  --c-border: #dce3ea;
+  --c-border-strong: #c4cfda;
+  --c-text: #13263a;
+  --c-text-muted: #56687a;
+  --c-text-subtle: #8394a5;
+
+  // Status
+  --c-success: #1f8f5f;
+  --c-warning: #b7791f;
+  --c-danger: #c53030;
+  --c-info: #2b6cb0;
+
+  // Derived brand
+  --c-primary-hover: color-mix(in srgb, var(--c-primary) 86%, black);
+  --c-primary-soft: color-mix(in srgb, var(--c-primary) 12%, var(--c-surface));
+  --c-primary-softer: color-mix(in srgb, var(--c-primary) 6%, var(--c-surface));
+  --c-primary-border: color-mix(in srgb, var(--c-primary) 35%, var(--c-border));
+  --c-primary-text: color-mix(in srgb, var(--c-primary) 82%, var(--c-text));
+  --c-accent-soft: color-mix(in srgb, var(--c-accent) 13%, var(--c-surface));
+  --c-accent-border: color-mix(in srgb, var(--c-accent) 40%, var(--c-border));
+  --c-accent-text: color-mix(in srgb, var(--c-accent) 85%, var(--c-text));
+  --c-focus: color-mix(in srgb, var(--c-primary) 75%, white);
+
+  // Chrome
+  --c-header-bg: var(--c-ink);
+  --c-header-text: #ffffff;
+  --c-header-muted: color-mix(in srgb, white 62%, var(--c-ink));
+  --c-overlay: rgb(8 18 28 / 0.45);
+  --c-code-bg: #0c1a28;
+  --c-code-text: #d5e1ec;
+
+  // Elevation
+  --shadow-sm: 0 1px 2px rgb(15 42 68 / 0.06), 0 1px 1px rgb(15 42 68 / 0.04);
+  --shadow-md: 0 6px 18px rgb(15 42 68 / 0.08), 0 1px 3px rgb(15 42 68 / 0.06);
+  --shadow-lg: 0 24px 60px rgb(15 42 68 / 0.22);
+
+  // Motion
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  // Layout
+  --header-h: 60px;
+  --mobile-nav-h: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  // Layers
+  --z-sticky: 10;
+  --z-header: 20;
+  --z-sheet: 40;
+  --z-drawer: 50;
+  --z-toast: 60;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --c-bg: #0a141e;
+  --c-surface: #0f1d2b;
+  --c-surface-2: #132435;
+  --c-surface-3: #1a2e42;
+  --c-border: #223649;
+  --c-border-strong: #2f475e;
+  --c-text: #e5edf4;
+  --c-text-muted: #9badbe;
+  --c-text-subtle: #6f8396;
+
+  --c-success: #3fbf86;
+  --c-warning: #e0a840;
+  --c-danger: #f06a6a;
+  --c-info: #63a4f0;
+
+  --c-primary-hover: color-mix(in srgb, var(--c-primary) 85%, white);
+  --c-primary-soft: color-mix(in srgb, var(--c-primary) 20%, var(--c-surface));
+  --c-primary-softer: color-mix(in srgb, var(--c-primary) 10%, var(--c-surface));
+  --c-primary-text: color-mix(in srgb, var(--c-primary) 62%, white);
+  --c-accent-soft: color-mix(in srgb, var(--c-accent) 20%, var(--c-surface));
+  --c-accent-text: color-mix(in srgb, var(--c-accent) 62%, white);
+
+  --c-header-bg: color-mix(in srgb, var(--c-ink) 45%, #060d15);
+  --c-overlay: rgb(0 0 0 / 0.6);
+  --c-code-bg: #08121c;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 8px 22px rgb(0 0 0 / 0.38);
+  --shadow-lg: 0 24px 60px rgb(0 0 0 / 0.55);
+}
+
+:root[data-motion='reduced'] {
+  --dur-fast: 0ms;
+  --dur: 0ms;
+  --dur-slow: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}

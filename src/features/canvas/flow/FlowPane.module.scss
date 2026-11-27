@@ -1,0 +1,410 @@
+.pane {
+  @include scrollbar-thin;
+  height: 100%;
+  overflow-y: auto;
+  padding: sp(5);
+  background: var(--c-bg);
+
+  @include down(md) {
+    padding: sp(3);
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: sp(3);
+  margin-bottom: sp(4);
+
+  > div {
+    flex: 1 1 240px;
+  }
+
+  h3 {
+    font-size: rem(16px);
+  }
+
+  p {
+    margin-top: 2px;
+    font-size: rem(12.5px);
+    color: var(--c-text-muted);
+  }
+}
+
+// Happy path ------------------------------------------------------------------
+.path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: sp(2);
+  margin-bottom: sp(5);
+  padding: sp(3);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--c-primary-border);
+  background: var(--c-primary-softer);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: sp(2);
+  }
+}
+
+.edge {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1);
+  color: var(--c-text-subtle);
+
+  code {
+    @include mono;
+    font-size: rem(10.5px);
+  }
+}
+
+.pathNode {
+  @include reset-button;
+  padding: sp(1.5) sp(3);
+  border-radius: var(--radius-pill);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  font-size: rem(12.5px);
+  font-weight: 600;
+
+  &:hover {
+    border-color: var(--c-primary-border);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.pathOn {
+  border-color: var(--c-primary);
+  color: var(--c-primary-text);
+}
+
+// Cards -------------------------------------------------------------------------
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: sp(4);
+
+  @include down(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.card {
+  @include card(0);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  @include transition(border-color, box-shadow, opacity, transform);
+}
+
+.cardOn {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 16%, transparent);
+}
+
+.thumb {
+  @include reset-button;
+  position: relative;
+  height: 168px;
+  overflow: hidden;
+  background: var(--c-bg);
+  border-bottom: 1px solid var(--c-border);
+  cursor: zoom-in;
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+// Render the real surface at desktop width, then scale it down.
+.thumbInner {
+  width: 1100px;
+  padding: 40px;
+  transform: scale(0.25);
+  transform-origin: top left;
+  pointer-events: none;
+  container: preview / inline-size;
+}
+
+.idx {
+  @include flex-center;
+  position: absolute;
+  top: sp(2);
+  left: sp(2);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-ink);
+  color: #fff;
+  font-size: rem(12px);
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: sp(1.5);
+  padding: sp(3) sp(3.5);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+
+  strong {
+    @include truncate;
+    font-size: rem(14px);
+  }
+}
+
+.confirm {
+  display: inline-flex;
+  gap: sp(1);
+}
+
+.route {
+  @include mono;
+  font-size: rem(11.5px);
+  color: var(--c-text-subtle);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: sp(1);
+}
+
+.inbound {
+  display: flex;
+  align-items: center;
+  gap: sp(1);
+  font-size: rem(11.5px);
+  color: var(--c-text-muted);
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: sp(1.5);
+  margin-top: auto;
+  padding: sp(3) sp(3.5);
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface-2);
+}
+
+.linksLabel {
+  @include eyebrow;
+  font-size: rem(10px);
+}
+
+.link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr);
+  align-items: center;
+  gap: sp(1.5);
+  font-size: rem(12px);
+  color: var(--c-text-subtle);
+
+  select {
+    min-width: 0;
+    height: rem(28px);
+    padding-inline: sp(1.5);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--c-border-strong);
+    background: var(--c-surface);
+    color: var(--c-text);
+    font-size: rem(12px);
+
+    @include down(md) {
+      font-size: 16px;
+    }
+  }
+}
+
+.action {
+  @include truncate;
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+// Reorder mode ---------------------------------------------------------------------
+.paneReorder {
+  // room for the sticky confirm bar
+  padding-bottom: 0;
+}
+
+.headActions {
+  display: flex;
+  gap: sp(2);
+}
+
+.pathDraft {
+  border-style: solid;
+  border-color: var(--c-accent-border);
+  background: var(--c-accent-soft);
+
+  .pathNode b {
+    @include mono;
+    margin-right: 2px;
+    color: var(--c-text-subtle);
+  }
+}
+
+.edgeIcon {
+  color: var(--c-text-subtle);
+}
+
+.pathMoved {
+  border-color: var(--c-accent);
+  color: var(--c-accent-text);
+}
+
+.cardDraggable {
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.cardDragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+.cardDrop {
+  border-color: var(--c-accent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 25%, transparent), var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.cardMoved {
+  border-color: var(--c-accent-border);
+}
+
+.grip {
+  position: absolute;
+  right: sp(2);
+  top: sp(2);
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1);
+  padding: 2px sp(2);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--c-surface) 90%, transparent);
+  border: 1px solid var(--c-border);
+  font-size: rem(11px);
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.movedBadge {
+  position: absolute;
+  left: sp(2);
+  bottom: sp(2);
+  padding: 2px sp(2);
+  border-radius: var(--radius-pill);
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  font-size: rem(11px);
+  font-weight: 700;
+}
+
+.moveBtns {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.swapWith {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: sp(2);
+  margin-top: sp(1);
+  font-size: rem(12px);
+  color: var(--c-text-muted);
+
+  select {
+    min-width: 0;
+    height: rem(30px);
+    padding-inline: sp(2);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--c-border-strong);
+    background: var(--c-surface);
+    color: var(--c-text);
+    font-size: rem(12.5px);
+
+    @include down(md) {
+      font-size: 16px;
+    }
+  }
+}
+
+.confirmBar {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(3) sp(5);
+  margin: sp(5) calc(#{sp(5)} * -1) 0;
+  padding: sp(3) sp(5) calc(#{sp(3)} + var(--safe-bottom));
+  border-top: 1px solid var(--c-border);
+  background: color-mix(in srgb, var(--c-surface) 94%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 -8px 24px rgb(0 0 0 / 0.06);
+  animation: bar-up var(--dur-slow) var(--ease);
+
+  @include down(md) {
+    margin-inline: calc(#{sp(3)} * -1);
+    padding-inline: sp(3);
+  }
+}
+
+.confirmText {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: sp(2) sp(5);
+  min-width: 0;
+
+  strong {
+    font-size: rem(13.5px);
+  }
+}
+
+.confirmActions {
+  display: flex;
+  gap: sp(2);
+
+  @include down(sm) {
+    width: 100%;
+
+    > * {
+      flex: 1;
+    }
+  }
+}
+
+@keyframes bar-up {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}

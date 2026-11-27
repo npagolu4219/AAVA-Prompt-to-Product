@@ -1,0 +1,381 @@
+.app {
+  display: grid;
+  // Explicit minmax(0,1fr) column: without it the header's min-content width
+  // can widen the whole grid past the viewport on phones.
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+
+  @include down(md) {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+}
+
+.main {
+  display: grid;
+  // Sized against the space left by the nav rail, not the viewport.
+  grid-template-columns: clamp(300px, 32%, 440px) minmax(0, 1fr);
+  min-height: 0;
+
+  // Phones: single view, chosen by the bottom nav ---------------------------------
+  @include down(md) {
+    grid-template-columns: minmax(0, 1fr);
+
+    &[data-view='chat'] {
+      .right,
+      .steps {
+        display: none;
+      }
+    }
+
+    &[data-view='steps'] {
+      .right,
+      .chat {
+        display: none;
+      }
+    }
+
+    &[data-view='canvas'] {
+      .left {
+        display: none;
+      }
+    }
+  }
+}
+
+// Left pane ---------------------------------------------------------------------
+.left {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border-right: 1px solid var(--c-border);
+  background: var(--c-surface);
+
+  @include down(md) {
+    border-right: 0;
+  }
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  // The step map yields space first: the conversation keeps a readable minimum height.
+  flex: 0 1 auto;
+  max-height: 40%;
+  min-height: 44px;
+  border-bottom: 1px solid var(--c-border);
+
+  @include down(md) {
+    flex: 1;
+    max-height: none;
+    border-bottom: 0;
+  }
+}
+
+.stepsCollapsed .stepsBody {
+  display: none;
+
+  @include down(md) {
+    display: block;
+  }
+}
+
+.stepsBody {
+  @include scrollbar-thin;
+  overflow-y: auto;
+  padding: 0 sp(3) sp(3);
+
+  @include down(md) {
+    flex: 1;
+    padding: 0 sp(3) sp(4);
+  }
+}
+
+.sectionHead,
+.sectionHeadStatic {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  width: 100%;
+  padding: sp(2.5) sp(4);
+  text-align: left;
+}
+
+.sectionHead {
+  @include reset-button;
+  @include transition(background-color);
+  padding: sp(2.5) sp(4);
+
+  &:hover {
+    background: var(--c-surface-2);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: -2px;
+  }
+
+  @include down(md) {
+    pointer-events: none;
+
+    .chev {
+      display: none;
+    }
+  }
+}
+
+.sectionTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1.5);
+  @include eyebrow;
+  color: var(--c-text-muted);
+}
+
+.sectionMeta {
+  margin-left: auto;
+  font-size: rem(11.5px);
+  color: var(--c-text-subtle);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1.5);
+  margin-left: auto;
+  font-size: rem(12px);
+  font-weight: 650;
+  color: var(--c-accent-text);
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  animation: live 1.2s ease-out infinite;
+}
+
+.chev {
+  color: var(--c-text-subtle);
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  // auto = header + thread minimum + composer, so the step map shrinks before the chat does.
+  min-height: auto;
+
+  @include down(md) {
+    min-height: 0;
+  }
+}
+
+.thread {
+  flex: 1;
+  min-height: 200px;
+  // Size containment: the thread's message height must not feed the chat's min-content,
+  // otherwise the column grows past the viewport instead of scrolling.
+  contain: size;
+
+  @include down(md) {
+    min-height: 0;
+  }
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2.5);
+  padding: sp(3) sp(4) sp(4);
+  border-top: 1px solid var(--c-border);
+  box-shadow: 0 -6px 16px -12px rgb(15 42 68 / 0.18);
+  background: var(--c-surface);
+
+  @include down(md) {
+    padding: sp(2.5) sp(3) sp(3);
+  }
+}
+
+// Right pane --------------------------------------------------------------------
+.right {
+  min-width: 0;
+  min-height: 0;
+}
+
+// Mobile HITL sheet -------------------------------------------------------------
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--mobile-nav-h) + var(--safe-bottom));
+  z-index: var(--z-sheet);
+  max-height: 70dvh;
+  overflow-y: auto;
+  filter: drop-shadow(0 -8px 24px rgb(0 0 0 / 0.18));
+}
+
+// Mobile bottom navigation -------------------------------------------------------
+.mobileNav {
+  display: none;
+
+  @include down(md) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    height: calc(var(--mobile-nav-h) + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    border-top: 1px solid var(--c-border);
+    background: color-mix(in srgb, var(--c-surface) 92%, transparent);
+    backdrop-filter: blur(10px);
+    z-index: var(--z-header);
+  }
+}
+
+.navItem {
+  @include reset-button;
+  @include transition(color);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--c-text-subtle);
+  -webkit-tap-highlight-color: transparent;
+
+  &::before {
+    @include transition(transform, opacity);
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 30%;
+    right: 30%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--c-primary);
+    transform: scaleX(0);
+    opacity: 0;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: -4px;
+  }
+}
+
+.navActive {
+  color: var(--c-primary-text);
+
+  &::before {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  .navIcon {
+    background: var(--c-primary-soft);
+  }
+}
+
+.navIcon {
+  @include transition(background-color);
+  position: relative;
+  display: flex;
+  padding: 4px 16px;
+  border-radius: var(--radius-pill);
+}
+
+.navDot {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  border: 2px solid var(--c-surface);
+}
+
+.navLabel {
+  font-size: rem(11.5px);
+  font-weight: 600;
+}
+
+.navMeta {
+  @include mono;
+  font-size: rem(10px);
+  opacity: 0.75;
+}
+
+@keyframes live {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 50%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+// Studio entrance after leaving the landing page ------------------------------------
+.entering {
+  .left {
+    animation: studio-left 640ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .right {
+    animation: studio-right 760ms cubic-bezier(0.2, 0.8, 0.2, 1) 80ms both;
+  }
+
+  .steps li {
+    animation: studio-item 480ms var(--ease) both;
+
+    @for $i from 1 through 8 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{180 + $i * 45}ms;
+      }
+    }
+  }
+}
+
+@keyframes studio-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+}
+
+@keyframes studio-right {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.985);
+  }
+}
+
+@keyframes studio-item {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+
+// App shell: nav rail + routed page ------------------------------------------------
+.shell {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+
+  @include down(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pageSlot {
+  min-width: 0;
+  height: 100dvh;
+  overflow: hidden;
+  // Scopes route transitions to the page area; the nav rail stays static (see _view-transitions.scss).
+  view-transition-name: aava-page;
+}

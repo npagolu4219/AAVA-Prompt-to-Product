@@ -1,0 +1,899 @@
+// Left navigation — rail (desktop/tablet) · drawer (phones) --------------------------
+@property --p {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: false;
+}
+
+$ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+
+.nav {
+  --rail: 76px;
+  --wide: 268px;
+  --pad: #{sp(3)};
+  position: relative;
+  z-index: var(--z-header);
+  display: flex;
+  flex-direction: column;
+  width: var(--rail);
+  height: 100dvh;
+  padding: sp(3.5) var(--pad) calc(#{sp(3)} + var(--safe-bottom));
+  background:
+    radial-gradient(240px 180px at 0% 0%, color-mix(in srgb, var(--c-primary) 9%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--c-surface), color-mix(in srgb, var(--c-surface) 92%, var(--c-bg)));
+  border-right: 1px solid var(--c-border);
+  transition: width var(--dur-slow) cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  @include down(md) {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: var(--z-drawer);
+    width: min(304px, 86vw);
+    border-right: 0;
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-104%);
+    transition: transform 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    visibility: hidden;
+  }
+}
+
+.expanded {
+  width: var(--wide);
+}
+
+.mobileOpen {
+  transform: none;
+  visibility: visible;
+}
+
+// Staggered entrance for drawer contents.
+.mobileOpen [style*='--i'] {
+  animation: drawer-item 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 28ms + 60ms);
+}
+
+.scrim {
+  display: none;
+
+  @include down(md) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer);
+    background: var(--c-overlay);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-slow) var(--ease);
+  }
+}
+
+.scrimOn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// Labels reveal smoothly (max-width + opacity + slide) instead of popping.
+.label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(-6px);
+  white-space: nowrap;
+  transition:
+    max-width var(--dur-slow) cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity var(--dur) var(--ease),
+    transform var(--dur-slow) var(--ease);
+
+  .open & {
+    max-width: 200px;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0ms, 90ms, 60ms;
+  }
+}
+
+// Brand -------------------------------------------------------------------------------
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+  min-height: 44px;
+  margin-bottom: sp(4);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: sp(2.5);
+  min-width: 0;
+  padding-left: 4px;
+  color: var(--c-text);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:hover .mark {
+    transform: rotate(-6deg) scale(1.06);
+  }
+}
+
+.mark {
+  flex: none;
+  display: flex;
+  filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--c-primary) 35%, transparent));
+  transition: transform 420ms $ease-spring;
+}
+
+.word {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  line-height: 1.15;
+  white-space: nowrap;
+  transition:
+    max-width var(--dur-slow) cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity var(--dur) var(--ease);
+
+  strong {
+    font-size: rem(15px);
+    letter-spacing: 0.04em;
+  }
+
+  span {
+    font-size: rem(11.5px);
+    color: var(--c-text-muted);
+  }
+
+  .open & {
+    max-width: 200px;
+    opacity: 1;
+    transition-delay: 0ms, 90ms;
+  }
+}
+
+.close {
+  @include reset-button;
+  @include flex-center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  color: var(--c-text-muted);
+
+  &:hover {
+    background: var(--c-surface-3);
+    color: var(--c-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// Edge handle -------------------------------------------------------------------------
+.handle {
+  @include reset-button;
+  @include flex-center;
+  position: absolute;
+  top: 30px;
+  right: -13px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) $ease-spring,
+    color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+
+  .nav:hover &,
+  &:focus-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  &:hover {
+    color: var(--c-on-primary);
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  // Touch devices can't hover — keep it visible.
+  @include touch {
+    opacity: 1;
+    transform: none;
+  }
+
+  @include down(md) {
+    display: none;
+  }
+}
+
+// New chat -----------------------------------------------------------------------------
+.newChat {
+  @include reset-button;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: sp(2.5);
+  height: 46px;
+  margin-bottom: sp(4);
+  padding-inline: 11px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--c-primary), color-mix(in srgb, var(--c-primary) 70%, var(--c-accent)));
+  color: var(--c-on-primary);
+  font-weight: 650;
+  font-size: rem(13.5px);
+  box-shadow:
+    0 8px 20px color-mix(in srgb, var(--c-primary) 32%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 25%, transparent);
+  transition:
+    transform var(--dur) $ease-spring,
+    box-shadow var(--dur) var(--ease),
+    filter var(--dur) var(--ease);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+      0 12px 26px color-mix(in srgb, var(--c-primary) 40%, transparent),
+      inset 0 1px 0 color-mix(in srgb, white 25%, transparent);
+
+    .newIcon {
+      transform: rotate(90deg);
+    }
+
+    .shine {
+      transform: translateX(260%) skewX(-18deg);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:disabled {
+    filter: grayscale(0.4);
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.newIcon {
+  @include flex-center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: color-mix(in srgb, white 18%, transparent);
+  transition: transform 420ms $ease-spring;
+}
+
+.shine {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, white 35%, transparent), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  transition: transform 700ms var(--ease);
+  pointer-events: none;
+}
+
+// Groups & items ------------------------------------------------------------------------
+.groups {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+  flex: 1;
+  min-height: 0;
+  margin-inline: calc(var(--pad) * -1);
+  padding-inline: var(--pad);
+  overflow: hidden auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.group ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.groupTitle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 18px;
+  margin: 0 0 sp(1.5) sp(2.5);
+  @include eyebrow;
+  font-size: rem(10.5px);
+
+  // Collapsed: a short divider stands in for the title.
+  &::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--c-border-strong);
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .open &::before {
+    opacity: 0;
+  }
+}
+
+// Sliding active pill (one element, moves between items).
+.pill {
+  position: absolute;
+  top: 0;
+  left: var(--pad);
+  right: var(--pad);
+  border-radius: var(--radius-md);
+  background: var(--c-primary-soft);
+  box-shadow: inset 0 0 0 1px var(--c-primary-border);
+  transition:
+    transform 460ms $ease-spring,
+    height var(--dur) var(--ease);
+  pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--pad) * -1);
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--c-primary);
+  }
+}
+
+.item {
+  @include reset-button;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: sp(3);
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border-radius: var(--radius-md);
+  color: var(--c-text-muted);
+  text-decoration: none;
+  transition:
+    color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+
+  &:hover {
+    color: var(--c-text);
+    background: color-mix(in srgb, var(--c-surface-3) 70%, transparent);
+
+    .iconWrap {
+      transform: translateX(1px) scale(1.08);
+    }
+  }
+
+  &:active .iconWrap {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+.active {
+  color: var(--c-primary-text);
+
+  &:hover {
+    color: var(--c-primary-text);
+    background: transparent;
+  }
+
+  .iconWrap {
+    animation: icon-pop 420ms $ease-spring;
+  }
+
+  .itemHint {
+    color: color-mix(in srgb, var(--c-primary-text) 70%, var(--c-text-muted));
+  }
+}
+
+.iconWrap {
+  position: relative;
+  display: flex;
+  flex: none;
+  justify-content: center;
+  width: 22px;
+  transition: transform 300ms $ease-spring;
+}
+
+// Pulsing halo while a run is in progress.
+.iconLive::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 2px solid var(--c-accent);
+  opacity: 0;
+  animation: halo 1.6s ease-out infinite;
+}
+
+.itemLabel {
+  font-size: rem(13.5px);
+  font-weight: 600;
+}
+
+.itemHint {
+  font-size: rem(11px);
+  font-weight: 400;
+  color: var(--c-text-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  @include mono;
+  margin-left: auto;
+  min-width: 22px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--c-surface-3);
+  font-size: rem(10.5px);
+  font-weight: 600;
+  text-align: center;
+  color: var(--c-text-muted);
+  animation: badge-pop 380ms $ease-spring;
+  transition:
+    top var(--dur) var(--ease),
+    right var(--dur) var(--ease);
+
+  .active & {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+
+  // Collapsed rail: a small corner counter.
+  .nav:not(.open) & {
+    position: absolute;
+    top: 5px;
+    right: 7px;
+    min-width: 17px;
+    padding: 0 4px;
+    font-size: rem(9.5px);
+    line-height: 15px;
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+    box-shadow: 0 0 0 2px var(--c-surface);
+  }
+}
+
+// Tooltips (collapsed rail only) --------------------------------------------------------
+.nav:not(.open) [data-tip] {
+  &::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 14px);
+    top: 50%;
+    z-index: 5;
+    padding: sp(1.5) sp(2.5);
+    border-radius: var(--radius-sm);
+    background: var(--c-ink);
+    color: #fff;
+    font-size: rem(12px);
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-6px, -50%);
+    transition:
+      opacity var(--dur) var(--ease),
+      transform var(--dur) $ease-spring;
+
+    :global([data-theme='dark']) & {
+      background: var(--c-surface-3);
+      color: var(--c-text);
+    }
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 1;
+    transform: translate(0, -50%);
+    transition-delay: 120ms;
+  }
+}
+
+// Clip-free tooltips: the collapsed rail lets them overflow.
+.nav:not(.open) {
+  overflow: visible;
+
+  .newChat {
+    overflow: visible;
+  }
+
+  .shine {
+    display: none;
+  }
+
+  .groups {
+    overflow: visible;
+  }
+}
+
+// Live run card -----------------------------------------------------------------------------
+.runCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: sp(3);
+  padding: sp(2) 9px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-accent-border);
+  background: linear-gradient(135deg, var(--c-accent-soft), color-mix(in srgb, var(--c-primary) 8%, var(--c-surface)));
+  color: var(--c-text);
+  text-decoration: none;
+  animation: card-in 420ms $ease-spring both;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  .nav:not(.open) & {
+    padding: 6px;
+    justify-content: center;
+    border-color: transparent;
+    background: transparent;
+  }
+}
+
+.ring {
+  --p: 0;
+  @include flex-center;
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: conic-gradient(var(--c-accent) calc(var(--p) * 360deg), color-mix(in srgb, var(--c-accent) 18%, transparent) 0);
+  transition: --p var(--dur-slow) var(--ease);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--c-surface);
+  }
+
+  span {
+    position: relative;
+    @include mono;
+    font-size: rem(10px);
+    font-weight: 700;
+    color: var(--c-accent-text);
+  }
+}
+
+.runTitle {
+  font-size: rem(12.5px);
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.runStep {
+  font-size: rem(11px);
+  color: var(--c-text-muted);
+}
+
+// Recent chats -----------------------------------------------------------------------------
+.recent {
+  display: flex;
+  flex-direction: column;
+  gap: sp(1);
+  padding-top: sp(4);
+  border-top: 1px solid var(--c-border);
+  animation: fade-in var(--dur-slow) var(--ease) 80ms both;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 sp(2.5) sp(1);
+    @include eyebrow;
+    font-size: rem(10.5px);
+
+    button {
+      @include reset-button;
+      font-size: rem(11px);
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--c-primary-text);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+}
+
+.empty {
+  display: flex;
+  align-items: flex-start;
+  gap: sp(2);
+  padding: sp(2.5);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--c-border-strong);
+  font-size: rem(12px);
+  color: var(--c-text-subtle);
+
+  svg {
+    flex: none;
+    margin-top: 2px;
+  }
+}
+
+.thread {
+  @include reset-button;
+  display: flex;
+  align-items: flex-start;
+  gap: sp(2.5);
+  width: 100%;
+  padding: sp(2) sp(2.5);
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition:
+    background-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--c-surface-3) 70%, transparent);
+    transform: translateX(2px);
+
+    .threadDot {
+      background: var(--c-primary);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+.threadOn {
+  background: var(--c-surface-3);
+
+  .threadDot {
+    background: var(--c-primary);
+    box-shadow: 0 0 0 3px var(--c-primary-soft);
+  }
+}
+
+.threadDot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--c-border-strong);
+  transition:
+    background-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.threadText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.threadTitle {
+  @include truncate;
+  font-size: rem(13px);
+  font-weight: 550;
+  color: var(--c-text);
+}
+
+.threadMeta {
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+}
+
+// Footer ------------------------------------------------------------------------------------
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: sp(3);
+  padding-top: sp(3);
+  border-top: 1px solid var(--c-border);
+}
+
+.modeToggle {
+  @include reset-button;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: sp(3);
+  min-height: 44px;
+  padding: 0 9px;
+  border-radius: var(--radius-md);
+  color: var(--c-text-muted);
+  transition: background-color var(--dur) var(--ease);
+
+  .label {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    gap: sp(2);
+  }
+
+  &:hover {
+    color: var(--c-text);
+    background: color-mix(in srgb, var(--c-surface-3) 70%, transparent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+// A tiny switch: knob slides and the icon swaps sun ↔ moon.
+.modeKnob {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--c-accent) 30%, var(--c-surface-3));
+  transition: background-color var(--dur-slow) var(--ease);
+
+  svg {
+    position: absolute;
+    top: 2.5px;
+    left: 2.5px;
+    padding: 1px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--c-surface);
+    color: var(--c-accent-text);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur-slow) $ease-spring;
+  }
+}
+
+.modeDark {
+  background: color-mix(in srgb, var(--c-primary) 45%, var(--c-surface-3));
+
+  svg {
+    transform: translateX(12px) rotate(-30deg);
+    color: var(--c-primary-text);
+  }
+}
+
+.kbd {
+  @include mono;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface-2);
+  font-size: rem(10px);
+  color: var(--c-text-subtle);
+
+  @include down(md) {
+    display: none;
+  }
+}
+
+// Keyframes ---------------------------------------------------------------------------------
+@keyframes drawer-item {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+}
+
+@keyframes icon-pop {
+  40% {
+    transform: scale(1.18);
+  }
+}
+
+@keyframes badge-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes halo {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+// Reduced motion: keep state changes, drop movement.
+:global([data-motion='reduced']) .nav *,
+:global([data-motion='reduced']) .nav {
+  animation: none !important;
+  transition-duration: 0ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav,
+  .nav * {
+    animation: none !important;
+    transition-duration: 0ms !important;
+  }
+}

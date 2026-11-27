@@ -1,0 +1,847 @@
+// ROI dashboard -----------------------------------------------------------------------
+// Chart colours: the dataviz reference palette (validated light + dark). Slots 1–3 are
+// categorical; the diverging pair (blue gain ↔ red cost) encodes polarity in the value bridge.
+.page {
+  --viz-1: #2a78d6;
+  --viz-2: #eb6834;
+  --viz-3: #1baf7a;
+  --viz-pos: #2a78d6;
+  --viz-neg: #e34948;
+  height: 100dvh;
+  overflow-y: auto;
+  background: var(--c-bg);
+  @include scrollbar-thin;
+
+  :global([data-theme='dark']) & {
+    --viz-1: #3987e5;
+    --viz-2: #d95926;
+    --viz-3: #199e70;
+    --viz-pos: #3987e5;
+    --viz-neg: #e66767;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: sp(6);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: sp(5) clamp(#{sp(4)}, 4vw, #{sp(10)}) calc(#{sp(12)} + var(--safe-bottom));
+
+  @include down(md) {
+    gap: sp(5);
+    padding-top: sp(4);
+  }
+}
+
+// Filters -----------------------------------------------------------------------------
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: sp(3) sp(4);
+}
+
+.select {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(2);
+  height: rem(34px);
+  padding-inline: sp(3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  font-size: rem(12.5px);
+
+  select {
+    max-width: 240px;
+    border: 0;
+    background: transparent;
+    color: var(--c-text);
+    font-size: rem(13px);
+    font-weight: 600;
+
+    &:focus {
+      outline: none;
+    }
+
+    @include down(md) {
+      font-size: 16px;
+    }
+  }
+
+  &:focus-within {
+    @include focus-ring;
+  }
+}
+
+.sampleToggle {
+  min-width: 220px;
+}
+
+.liveCount {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(2);
+  margin-left: auto;
+  font-size: rem(12.5px);
+  color: var(--c-text-muted);
+
+  @include down(md) {
+    margin-left: 0;
+  }
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-text-subtle);
+}
+
+.liveOn {
+  background: var(--c-success);
+}
+
+.sampleNote {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  padding: sp(2.5) sp(3.5);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--c-border-strong);
+  font-size: rem(12.5px);
+  color: var(--c-text-muted);
+
+  svg {
+    flex: none;
+  }
+}
+
+// KPIs --------------------------------------------------------------------------------
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: sp(3);
+
+  @media (max-width: 1399.98px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include down(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.kpi {
+  @include card(4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: sp(1.5);
+  min-width: 0;
+}
+
+.kpiLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(1.5);
+  font-size: rem(12px);
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.kpiValue {
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.kpiSub {
+  font-size: rem(11.5px);
+  color: var(--c-text-subtle);
+}
+
+.good {
+  color: var(--c-success);
+}
+
+.bad {
+  color: var(--c-danger);
+}
+
+// Layout ------------------------------------------------------------------------------
+.row2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: sp(4);
+
+  @include down(lg) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.card {
+  @include card(5);
+  display: flex;
+  flex-direction: column;
+  gap: sp(3);
+  min-width: 0;
+
+  header h3 {
+    font-size: rem(14.5px);
+  }
+
+  header p {
+    margin-top: 2px;
+    font-size: rem(12px);
+    color: var(--c-text-muted);
+  }
+
+  @include down(md) {
+    padding: sp(4);
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+}
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: sp(3);
+
+  h2 {
+    font-size: rem(18px);
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin-top: 2px;
+    max-width: 720px;
+    font-size: rem(12.5px);
+    color: var(--c-text-muted);
+  }
+}
+
+.compareGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: sp(4);
+
+  @include down(xl) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include down(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.compare {
+  @include card(4);
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+  margin: 0;
+  min-width: 0;
+}
+
+.compareHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: sp(2);
+  font-size: rem(13px);
+  font-weight: 650;
+}
+
+.delta {
+  flex: none;
+  padding: 1px sp(2);
+  border-radius: var(--radius-pill);
+  font-size: rem(11px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.deltaGood {
+  @include tint(var(--c-success));
+}
+
+.deltaBad {
+  @include tint(var(--c-danger));
+}
+
+.chartNote {
+  font-size: rem(11px);
+  color: var(--c-text-subtle);
+}
+
+// Chart primitives ----------------------------------------------------------------------
+.chartBox {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.grid {
+  stroke: var(--c-border);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.baseline {
+  stroke: var(--c-border-strong);
+  stroke-width: 1;
+}
+
+.crosshair {
+  stroke: var(--c-text-subtle);
+  stroke-width: 1;
+}
+
+.reference {
+  stroke: var(--c-text-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+}
+
+.axisLabel {
+  fill: var(--c-text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.valueLabel {
+  fill: var(--c-text);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bold {
+  font-weight: 700;
+  fill: var(--c-text);
+}
+
+.tip {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: sp(1.5) sp(2.5);
+  border-radius: var(--radius-sm);
+  background: var(--c-ink);
+  color: #fff;
+  font-size: rem(11.5px);
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  box-shadow: var(--shadow-md);
+
+  :global([data-theme='dark']) & {
+    background: var(--c-surface-3);
+    color: var(--c-text);
+    border: 1px solid var(--c-border-strong);
+  }
+}
+
+.tipRow {
+  display: flex;
+  align-items: center;
+  gap: sp(1.5);
+
+  i {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: sp(1.5) sp(4);
+  font-size: rem(12px);
+  color: var(--c-text-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: sp(1.5);
+  }
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--c);
+}
+
+.swatchDashed {
+  height: 0;
+  border-top: 2px dashed var(--c);
+  background: none;
+  border-radius: 0;
+}
+
+// Ranked bars ---------------------------------------------------------------------------
+.ranked {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+
+  li {
+    display: grid;
+    grid-template-columns: minmax(120px, 190px) minmax(0, 1fr) 72px minmax(150px, 220px);
+    align-items: center;
+    gap: sp(3);
+    font-size: rem(12.5px);
+
+    @include down(lg) {
+      grid-template-columns: minmax(110px, 160px) minmax(0, 1fr) 64px;
+
+      .rankedMeta {
+        grid-column: 1 / -1;
+        margin-top: -6px;
+      }
+    }
+  }
+}
+
+.rankedLabel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-weight: 600;
+
+  small {
+    font-weight: 400;
+    font-size: rem(11px);
+    color: var(--c-text-subtle);
+  }
+}
+
+.rankedTrack {
+  height: 14px;
+}
+
+.rankedBar {
+  display: block;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--viz-1);
+}
+
+.rankedValue {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rankedMeta {
+  font-size: rem(11.5px);
+  color: var(--c-text-subtle);
+  @include mono;
+}
+
+// Share bar -----------------------------------------------------------------------------
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+}
+
+.shareBar {
+  display: flex;
+  gap: 2px; // 2px surface gap between segments
+  height: 22px;
+
+  span {
+    min-width: 4px;
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+    &:last-child {
+      border-radius: 0 4px 4px 0;
+    }
+  }
+}
+
+.shareTip {
+  min-height: 1.2em;
+  font-size: rem(12px);
+  color: var(--c-text-muted);
+}
+
+.shareLabels {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+
+  li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto 44px;
+    align-items: center;
+    gap: sp(2.5);
+    font-size: rem(12.5px);
+
+    b {
+      font-variant-numeric: tabular-nums;
+    }
+
+    small {
+      text-align: right;
+      color: var(--c-text-subtle);
+    }
+  }
+}
+
+// Facts / mini KPIs ------------------------------------------------------------------------
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: sp(2);
+  margin: 0;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: sp(2);
+    padding: sp(2.5) sp(3);
+    border-radius: var(--radius-sm);
+    background: var(--c-surface-2);
+  }
+
+  dt {
+    font-size: rem(12.5px);
+    color: var(--c-text-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @include down(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.miniKpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: sp(3);
+
+  @include down(lg) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.miniKpi {
+  @include card(3.5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  span {
+    font-size: rem(12px);
+    color: var(--c-text-muted);
+  }
+
+  strong {
+    font-size: rem(20px);
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    @include truncate;
+    font-size: rem(11px);
+    color: var(--c-text-subtle);
+  }
+}
+
+// Projects table ------------------------------------------------------------------------
+.tableWrap {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  font-size: rem(13px);
+
+  th {
+    @include eyebrow;
+    padding: sp(3) sp(3.5);
+    text-align: left;
+    background: var(--c-surface-2);
+    border-bottom: 1px solid var(--c-border);
+    font-size: rem(10.5px);
+  }
+
+  td {
+    padding: sp(3) sp(3.5);
+    border-bottom: 1px solid var(--c-border);
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+
+    small {
+      display: block;
+      font-size: rem(11px);
+      color: var(--c-text-subtle);
+    }
+  }
+
+  tbody tr {
+    cursor: pointer;
+    @include transition(background-color);
+
+    &:hover {
+      background: var(--c-surface-2);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+      outline-offset: -2px;
+    }
+
+    &:last-child td {
+      border-bottom: 0;
+    }
+  }
+
+  .num {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  // Phones/tablets: each project becomes a card with labelled values.
+  @include down(lg) {
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: sp(1.5) sp(4);
+      padding: sp(3.5);
+      border-bottom: 1px solid var(--c-border);
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      gap: sp(2);
+      padding: 0;
+      border: 0;
+
+      &::before {
+        content: attr(data-label);
+        color: var(--c-text-muted);
+        font-weight: 500;
+      }
+
+      &:first-child {
+        grid-column: 1 / -1;
+        display: block;
+        margin-bottom: sp(1);
+
+        &::before {
+          content: none;
+        }
+      }
+    }
+  }
+
+  @include down(sm) {
+    tbody tr {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+.rowOn {
+  background: var(--c-primary-softer) !important;
+  box-shadow: inset 3px 0 0 var(--c-primary);
+}
+
+.projName {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(2);
+  font-weight: 650;
+}
+
+// Methodology ------------------------------------------------------------------------------
+.method {
+  padding: sp(3) sp(4);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--c-border-strong);
+  font-size: rem(13px);
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: sp(2);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--c-text-muted);
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: sp(2);
+    margin-top: sp(3);
+    padding-left: sp(5);
+    list-style: disc;
+    color: var(--c-text-muted);
+  }
+
+  b {
+    color: var(--c-text);
+  }
+}
+
+// Assumptions drawer -----------------------------------------------------------------------
+.aForm {
+  display: flex;
+  flex-direction: column;
+  gap: sp(6);
+}
+
+.aGroup {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2.5);
+
+  h3 {
+    @include eyebrow;
+    color: var(--c-text-muted);
+  }
+
+  > p {
+    font-size: rem(12px);
+    color: var(--c-text-subtle);
+  }
+}
+
+.aGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: sp(2.5);
+
+  @include down(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.aField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  > span:first-child {
+    @include truncate;
+    font-size: rem(11.5px);
+    font-weight: 600;
+    color: var(--c-text-muted);
+    text-transform: capitalize;
+  }
+
+  small {
+    font-size: rem(10.5px);
+    color: var(--c-text-subtle);
+  }
+}
+
+.numInput {
+  display: flex;
+  align-items: center;
+  height: rem(34px);
+  padding-inline: sp(2.5);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--c-text);
+    font-size: rem(13px);
+    font-variant-numeric: tabular-nums;
+
+    &:focus {
+      outline: none;
+    }
+
+    @include down(md) {
+      font-size: 16px;
+    }
+  }
+
+  em {
+    flex: none;
+    font-style: normal;
+    font-size: rem(11px);
+    color: var(--c-text-subtle);
+  }
+
+  &:focus-within {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 16%, transparent);
+  }
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: 72px repeat(3, minmax(0, 1fr));
+  gap: sp(2);
+  align-items: end;
+}
+
+.matrixRow {
+  display: contents;
+
+  .aField > span:first-child {
+    @include visually-hidden;
+  }
+}
+
+.matrixHead {
+  font-size: rem(11px);
+  font-weight: 700;
+  color: var(--c-text-muted);
+}
+
+.matrixRowHead {
+  align-self: center;
+  font-size: rem(12px);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.aFoot {
+  font-size: rem(11.5px);
+  color: var(--c-text-subtle);
+}

@@ -1,0 +1,29 @@
+.canvas {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: var(--c-surface);
+}
+
+.panel {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--c-text-muted);
+}
+
+.actionLabel {
+  @include down(lg) {
+    display: none;
+  }
+}
